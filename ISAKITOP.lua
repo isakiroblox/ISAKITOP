@@ -1,123 +1,87 @@
--- ISAKITOP.lua
-
 local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
 local player = Players.LocalPlayer
 
+-- Ключ
 local validKeys = {
     ["isa-shidaev"] = true
 }
 
--- Главное окно ввода ключа
-local ScreenGui = Instance.new("ScreenGui")
+-- Ссылки
+local discordLink = "https://discord.gg/vVbcqvDK"
+local telegramLink = "https://t.me/isa_shidaev"
+
+-- GUI
+local ScreenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 ScreenGui.Name = "ISAKITOP"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = player:WaitForChild("PlayerGui")
 
-local InputFrame = Instance.new("Frame", ScreenGui)
-InputFrame.Size = UDim2.new(0, 360, 0, 180)
-InputFrame.Position = UDim2.new(0.5, -180, 0.5, -90)
-InputFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-InputFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 340, 0, 240)
+Frame.Position = UDim2.new(0.5, -170, 0.5, -120)
+Frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 
-local Label = Instance.new("TextLabel", InputFrame)
-Label.Size = UDim2.new(1, 0, 0, 40)
+local Label = Instance.new("TextLabel", Frame)
+Label.Size = UDim2.new(1, 0, 0, 30)
 Label.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 Label.TextColor3 = Color3.new(1, 1, 1)
 Label.TextScaled = true
 Label.Text = "Введите ключ"
-Label.Font = Enum.Font.SourceSansBold
 
-local TextBox = Instance.new("TextBox", InputFrame)
-TextBox.Size = UDim2.new(1, -40, 0, 40)
-TextBox.Position = UDim2.new(0, 20, 0, 50)
+local TextBox = Instance.new("TextBox", Frame)
+TextBox.Size = UDim2.new(1, -20, 0, 40)
+TextBox.Position = UDim2.new(0, 10, 0, 40)
 TextBox.PlaceholderText = "Ключ"
 TextBox.ClearTextOnFocus = false
-TextBox.TextScaled = true
-TextBox.Font = Enum.Font.SourceSans
+TextBox.Text = ""
 
-local CheckButton = Instance.new("TextButton", InputFrame)
-CheckButton.Size = UDim2.new(1, -40, 0, 40)
-CheckButton.Position = UDim2.new(0, 20, 0, 100)
+-- Кнопка проверки ключа
+local CheckButton = Instance.new("TextButton", Frame)
+CheckButton.Size = UDim2.new(1, -20, 0, 40)
+CheckButton.Position = UDim2.new(0, 10, 0, 90)
 CheckButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
 CheckButton.TextColor3 = Color3.new(1, 1, 1)
 CheckButton.TextScaled = true
 CheckButton.Text = "Проверить"
-CheckButton.Font = Enum.Font.SourceSansBold
 
--- Главное меню с функциями (скрыто изначально)
-local MenuFrame = Instance.new("Frame", ScreenGui)
-MenuFrame.Size = UDim2.new(0, 360, 0, 300)
-MenuFrame.Position = UDim2.new(0.5, -180, 0.5, -150)
-MenuFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-MenuFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-MenuFrame.Visible = false
+-- Кнопка Discord
+local DiscordButton = Instance.new("TextButton", Frame)
+DiscordButton.Size = UDim2.new(0.48, -10, 0, 40)
+DiscordButton.Position = UDim2.new(0, 10, 0, 140)
+DiscordButton.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+DiscordButton.TextColor3 = Color3.new(1, 1, 1)
+DiscordButton.TextScaled = true
+DiscordButton.Text = "Discord"
 
-local function createMenuButton(text, posY, callback)
-    local btn = Instance.new("TextButton", MenuFrame)
-    btn.Size = UDim2.new(1, -40, 0, 40)
-    btn.Position = UDim2.new(0, 20, 0, posY)
-    btn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    btn.TextColor3 = Color3.new(1, 1, 1)
-    btn.TextScaled = true
-    btn.Text = text
-    btn.Font = Enum.Font.SourceSansBold
-    btn.MouseButton1Click:Connect(callback)
-    return btn
-end
-
-local discordLink = "https://discord.gg/vVbcqvDK"
-local telegramLink = "https://t.me/isa_shidaev"
-
--- Функция телепорта на свою базу (замени координаты!)
-local function teleportToMyBase()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local hrp = character:WaitForChild("HumanoidRootPart")
-    hrp.CFrame = CFrame.new(100, 10, 200)
-    print("Телепорт на свою базу выполнен")
-end
-
--- Функция телепорта на чужую базу (замени координаты!)
-local function teleportToOtherBase()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local hrp = character:WaitForChild("HumanoidRootPart")
-    hrp.CFrame = CFrame.new(300, 10, 400)
-    print("Телепорт на чужую базу выполнен")
-end
-
-local function increaseSpeed()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:FindFirstChild("Humanoid")
-    if humanoid then
-        humanoid.WalkSpeed = 50
-        print("Скорость увеличена")
-    end
-end
-
-local function copyDiscord()
+DiscordButton.MouseButton1Click:Connect(function()
     setclipboard(discordLink)
-    print("Ссылка Discord скопирована")
-end
+    Label.Text = "Скопировано: Discord"
+end)
 
-local function copyTelegram()
+-- Кнопка Telegram
+local TelegramButton = Instance.new("TextButton", Frame)
+TelegramButton.Size = UDim2.new(0.48, -10, 0, 40)
+TelegramButton.Position = UDim2.new(0.52, 0, 0, 140)
+TelegramButton.BackgroundColor3 = Color3.fromRGB(0, 136, 204)
+TelegramButton.TextColor3 = Color3.new(1, 1, 1)
+TelegramButton.TextScaled = true
+TelegramButton.Text = "Telegram"
+
+TelegramButton.MouseButton1Click:Connect(function()
     setclipboard(telegramLink)
-    print("Ссылка Telegram скопирована")
-end
+    Label.Text = "Скопировано: Telegram"
+end)
 
--- Создаем кнопки в меню
-createMenuButton("Телепорт на свою базу", 20, teleportToMyBase)
-createMenuButton("Телепорт на чужую базу", 70, teleportToOtherBase)
-createMenuButton("Увеличить скорость", 120, increaseSpeed)
-createMenuButton("Скопировать Discord", 170, copyDiscord)
-createMenuButton("Скопировать Telegram", 220, copyTelegram)
-
--- Проверка ключа
+-- Проверка ключа и запуск скрипта
 CheckButton.MouseButton1Click:Connect(function()
     local enteredKey = TextBox.Text
     if validKeys[enteredKey] then
-        Label.Text = "Ключ верный! Меню открыто."
-        InputFrame.Visible = false
-        MenuFrame.Visible = true
+        Label.Text = "Ключ верный! Загружаю..."
+        task.wait(1)
+        ScreenGui:Destroy()
+        -- Загружается основной скрипт
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brainrot-op/refs/heads/main/Arbixhub-obfuscated.lua"))()
     else
-        Label.Text = "Неверный ключ! Попробуй снова."
+        Label.Text = "Неверный ключ!"
     end
 end)
